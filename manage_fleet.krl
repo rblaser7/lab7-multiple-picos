@@ -82,4 +82,11 @@ ruleset manage_fleet {
             clear ent:vehicles{[vehicle_id]}
         }
     }
+
+    rule clear_vehicles {
+        select when clear vehicles
+        always {
+            ent:vehicles := {}
+        }
+    }
 }

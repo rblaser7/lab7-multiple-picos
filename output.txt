@@ -1,6 +1,2 @@
 curl http://localhost:8080/sky/event/4uxSMDFzEGwoiQaJTtziY9/create_vehicle/car/new_vehicle?vehicle_id=Number1
-{"directives":[{"options":{"pico":{"parent_eci":"TbymCsuJKzfzXvb7HLBpFk","name":"Vehicle Number1 Pico","id":"cjjlxa0uq0010pwtlwrpnwqx0","eci":"892wYRTbWxqLzUnTVgX3dw"}},"name":"Pico_Created","meta":{"rid":"io.picolabs.wrangler","rule_name":"createChild","txn_id":"cjjlxa0u9000zpwtl2tdv2d9q","eid":"create_vehicle"}}]}
-
-curl http://localhost:8080/sky/event/4uxSMDFzEGwoiQaJTtziY9/create_vehicle/car/new_vehicle?vehicle_id=Number2
-{"directives":[{"options":{"pico":{"parent_eci":"6GV4z4b6GC3mBRxXxwkutX","name":"Vehicle Number2 Pico","id":"cjjlxciev001fpwtljpat7ga3","eci":"DgN5SCShLE2mENBxaP3gPF"}},"name":"Pico_Created","meta":{"rid":"io.picolabs.wrangler","rule_name":"createChild","txn_id":"cjjlxcied001epwtlzhke8t8b","eid":"create_vehicle"}}]}
-
+{"directives":[{"options":{"vehicle_id":"Number1"},"name":"vehicle_ready","meta":{"rid":"manage_fleet","rule_name":"create_vehicle","txn_id":"cjjlxn72t0028pwtlcersneq1","eid":"create_vehicle"}}]}
