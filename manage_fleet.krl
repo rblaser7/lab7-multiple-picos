@@ -45,10 +45,6 @@ ruleset manage_fleet {
             vehicle_id = event:attr("rs_attrs"){"vehicle_id"}
         }
         if vehicle_id.klog("found vehicle_id") then
-            noop()
-        fired {
-            ent:vehicles := ent:vehicles.defaultsTo({});
-            ent:vehicles{[vehicle_id]} := the_vehicle;
             event:send({
                 "eci": my_eci,
                 "eid": "subscription",
@@ -62,6 +58,9 @@ ruleset manage_fleet {
                     "wellKnown_Tx": vehicle_eci
                 }
             })
+        fired {
+            ent:vehicles := ent:vehicles.defaultsTo({});
+            ent:vehicles{[vehicle_id]} := the_vehicle;
         }
     }
 
