@@ -81,7 +81,10 @@ ruleset manage_fleet {
                 "eci": vehicle_pico_eci,
                 "eid": "delete-subscription",
                 "domain": "wrangler",
-                "type": "subscription_cancellation"
+                "type": "subscription_cancellation",
+                "attrs": {
+                    "eci": vehicle_pico_eci
+                }
             });
         fired {
             send_directive("deleting_vehicle", {"vehicle_id":vehicle_id, "pico_eci":vehicle_pico_eci});
