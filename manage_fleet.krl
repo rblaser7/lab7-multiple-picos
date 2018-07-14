@@ -75,7 +75,7 @@ ruleset manage_fleet {
             vehicle_pico_id = ent:vehicles[vehicle_id, "id"].klog("Found pico id: ").head()
             exists = ent:vehicles >< vehicle_id
             child_to_delete = nameFromID(vehicle_id)
-            sub_to_delete = Subscriptions:established("Id",vehicle_pico_id).head()
+            sub_to_delete = Subscriptions:established("Id",vehicle_pico_id).klog("Subscribtions with matching id: ").head()
         }
         if exists then
             send_directive("deleting_vehicle", {"vehicle_id":vehicle_id, "pico_id":vehicle_pico_id})
