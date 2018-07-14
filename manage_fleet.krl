@@ -48,7 +48,7 @@ ruleset manage_fleet {
             noop()
         fired {
             ent:vehicles := ent:vehicles.defaultsTo({});
-            ent:vehicles{[vehicle_id]} := the_vehicle
+            ent:vehicles{[vehicle_id]} := the_vehicle;
             event:send({
                 "eci": my_eci,
                 "eid": "subscription",
@@ -77,7 +77,7 @@ ruleset manage_fleet {
             send_directive("deleting_vehicle", {"vehicle_id":vehicle_id})
         fired {
             raise wrangler event "subscription_cancellation"
-                attributes {"Tx":sub_to_delete{"Tx"}}
+                attributes {"Tx":sub_to_delete{"Tx"}};
             raise wrangler event "child_deletion"
                 attributes {"name": child_to_delete};
             clear ent:vehicles{[vehicle_id]}
