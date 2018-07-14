@@ -17,6 +17,9 @@ ruleset manage_fleet {
         vehicles = function() {
             Subscriptions:established("Tx_role","vehicle")
         }
+        entVehicles = function() {
+            ent:vehicles
+        }
     }
 
     rule create_vehicle {
