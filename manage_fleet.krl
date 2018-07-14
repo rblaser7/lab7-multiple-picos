@@ -7,6 +7,7 @@ ruleset manage_fleet {
         author "Ryan Blaser"
         logging on
         use module io.picolabs.subscription alias Subscriptions
+        share vehicles
     }
 
     global {
