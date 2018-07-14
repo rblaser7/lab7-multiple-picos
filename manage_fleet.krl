@@ -72,7 +72,7 @@ ruleset manage_fleet {
         select when car unneeded_vehicle
         pre {
             vehicle_id = event:attr("vehicle_id")
-            vehicle_pico_id = ent:vehicles.values([vehicle_id, "id"]).head()
+            vehicle_pico_id = ent:vehicles.values([vehicle_id, "id"])
             vehicle_pico_id.klog("Found pico id: ")
             exists = ent:vehicles >< vehicle_id
             child_to_delete = nameFromID(vehicle_id)
