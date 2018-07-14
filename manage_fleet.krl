@@ -32,7 +32,7 @@ ruleset manage_fleet {
                 attributes {    "name": nameFromID(vehicle_id),
                                 "color": "#ffff00",
                                 "vehicle_id" : vehicle_id,
-                                "rids": "track_trips;io.picolabs.subscription" }
+                                "rids": "track_trips;trip_store;io.picolabs.subscription" }
         }
     }
 
