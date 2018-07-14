@@ -69,12 +69,13 @@ ruleset manage_fleet {
         select when car unneeded_vehicle
         pre {
             vehicle_id = event:attr("vehicle_id")
+            vehicle_pico_id = ent:vehicles{[vehicle_id, "id"]}
             exists = ent:vehicles >< vehicle_id
             child_to_delete = nameFromID(vehicle_id)
-            sub_to_delete = Subscriptions:established("Id",ent:vehicles{[vehicle_id, "id"]}).head();
+            sub_to_delete = Subscriptions:established("Id",vehicle_pico_id).head();
         }
         if exists then
-            send_directive("deleting_vehicle", {"vehicle_id":vehicle_id})
+            send_directive("deleting_vehicle", {"vehicle_id":vehicle_id, "sub_to_delete": sub_to_delete})
         fired {
             raise wrangler event "subscription_cancellation"
                 attributes {"Tx":sub_to_delete{"Tx"}};
