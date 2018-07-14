@@ -73,6 +73,7 @@ ruleset manage_fleet {
         pre {
             vehicle_id = event:attr("vehicle_id")
             vehicle_pico_id = ent:vehicles.values([vehicle_id, "id"]).head()
+            vehicle_pico_id.klog("Found pico id: ")
             exists = ent:vehicles >< vehicle_id
             child_to_delete = nameFromID(vehicle_id)
             sub_to_delete = Subscriptions:established("Id",vehicle_pico_id).head()
@@ -81,7 +82,7 @@ ruleset manage_fleet {
             send_directive("deleting_vehicle", {"vehicle_id":vehicle_id, "pico_id":vehicle_pico_id})
         fired {
             raise wrangler event "subscription_cancellation"
-                attributes {"eci":sub_to_delete{"Tx"}};
+                attributes {"Tx":sub_to_delete{"Tx"}};
             raise wrangler event "child_deletion"
                 attributes {"name": child_to_delete};
             clear ent:vehicles{[vehicle_id]}
