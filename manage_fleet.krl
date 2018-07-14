@@ -72,8 +72,7 @@ ruleset manage_fleet {
         select when car unneeded_vehicle
         pre {
             vehicle_id = event:attr("vehicle_id")
-            vehicle_pico_id = ent:vehicles.values([vehicle_id, "id"])
-            vehicle_pico_id.klog("Found pico id: ")
+            vehicle_pico_id = ent:vehicles.values([vehicle_id, "id"]).klog("Found pico id: ").head()
             exists = ent:vehicles >< vehicle_id
             child_to_delete = nameFromID(vehicle_id)
             sub_to_delete = Subscriptions:established("Id",vehicle_pico_id).head()
