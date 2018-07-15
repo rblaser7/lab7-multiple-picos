@@ -27,7 +27,6 @@ ruleset manage_fleet {
         pre {
             vehicle_id = event:attr("vehicle_id")
             exists = ent:vehicles >< vehicle_id
-            eci = meta:eci
         }
         if exists then
             send_directive("vehicle_ready", {"vehicle_id":vehicle_id})
@@ -78,10 +77,39 @@ ruleset manage_fleet {
         if exists then
             send_directive("deleting_vehicle", {"vehicle_id":vehicle_id, "pico_id":vehicle_pico_id})
         fired {
+            raise explicit event "delete_subscriptions";
             raise wrangler event "child_deletion"
                 attributes {"name": child_to_delete};
-            clear ent:vehicles{[vehicle_id]}
+            clear ent:vehicles{[vehicle_id]};
+            raise explicit event "add_subscriptions"
         }
+    }
+
+    rule delete_subscriptions {
+        select when explicit delete_subscriptions
+        foreach Subscriptions:established("Tx_role","vehicle") setting(subscription)
+            always {
+                raise wrangler event "subscription_cancellation"
+                    attributes {"Tx":subscription{"Tx"}}
+            }
+    }
+
+    rule add_subscriptions {
+        select when explicit add_subscriptions
+        foreach ent:vehicles.keys() setting (key)
+            event:send({
+                "eci": meta:eci,
+                "eid": "subscription",
+                "domain": "wrangler",
+                "type": "subscription",
+                "attrs": {
+                    "name": nameFromID(key),
+                    "Rx_role": "fleet",
+                    "Tx_role": "vehicle",
+                    "channel_type": "subscription",
+                    "wellKnown_Tx": ent:vehicles{[key, "eci"]}
+                }
+            })
     }
 
     rule clear_vehicles {
