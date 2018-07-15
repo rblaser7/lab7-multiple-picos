@@ -7,7 +7,7 @@ ruleset manage_fleet {
         author "Ryan Blaser"
         logging on
         use module io.picolabs.subscription alias Subscriptions
-        share vehicles, entVehicles, generateReport
+        share vehicles, entVehicles, generateReports
     }
 
     global {
@@ -21,15 +21,25 @@ ruleset manage_fleet {
             ent:vehicles
         }
         generateReports = function() {
-            subs = [];
-            Subscriptions:established("Tx_role","vehicle").map(function(sub) {
-                subs.append(generateReport(sub))
-            });
-            subs
+            // subs = {};
+            // the_vehicles = Subscriptions:established("Tx_role","vehicle");
+            // the_vehicles.klog("Vehicles: ");
+            helper = function(subs, the_vehicles, count) {
+                (count < the_vehicles.length()) => helper2(subs, the_vehicles, count)
+                                                | subs
+            };
+            helper2 = function(subs, the_vehicles, count) {
+              report = generateReport(the_vehicles{[count, "Tx"]});
+              report.klog("Report value ");
+              subs = subs.put(count, report).klog("Subs now has value ");
+              helper(subs, the_vehicles, count + 1)
+            };
+            helper({}, Subscriptions:established("Tx_role","vehicle"), 0)
         }
-        generateReport = function(sub) {
-            eci = sub{"Tx"};
-            http:get("https://#{eci}/sky/cloud/trip_store/trips", {});
+        generateReport = function(eci) {
+            url = meta:host + "/sky/cloud/" + eci + "/trip_store/trips";
+            response = http:get(url, {});
+            response["content"]
         }
     }
 
