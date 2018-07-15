@@ -28,12 +28,8 @@ ruleset manage_fleet {
             subs
         }
         generateReport = function(sub) {
-            event:send({ 
-                    "eci": subscription{"Tx"},
-                    "eid": "getReport",
-                    "domain": "trip_store",
-                    "type": "trips" 
-                })
+            eci = sub{"Tx"};
+            http:get("https://#{eci}/sky/cloud/trip_store/trips", {});
         }
     }
 
