@@ -7,7 +7,7 @@ ruleset manage_fleet {
         author "Ryan Blaser"
         logging on
         use module io.picolabs.subscription alias Subscriptions
-        share vehicles, entVehicles
+        share vehicles, entVehicles, generateReport
     }
 
     global {
@@ -19,6 +19,21 @@ ruleset manage_fleet {
         }
         entVehicles = function() {
             ent:vehicles
+        }
+        generateReports = function() {
+            subs = [];
+            Subscriptions:established("Tx_role","vehicle").map(function(sub) {
+                subs.append(generateReport(sub))
+            });
+            subs
+        }
+        generateReport = function(sub) {
+            event:send({ 
+                    "eci": subscription{"Tx"},
+                    "eid": "getReport",
+                    "domain": "trip_store",
+                    "type": "trips" 
+                })
         }
     }
 
