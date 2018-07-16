@@ -8,6 +8,7 @@ ruleset trip_store {
         logging on
         provides trips, long_trips, short_trips
         share trips, long_trips, short_trips
+        use module io.picolabs.subscription alias Subscriptions
     }
 
     global {
@@ -77,4 +78,23 @@ ruleset trip_store {
         }
     }
   
+    rule generate_report {
+        select when car generate_report
+        pre {
+            trips = trips()
+            reportId = event:attr("reportId")
+            subscription = Subscriptions:established("Tx_role","fleet").head()
+            thing_subs = subscription.klog("fleet")
+        }
+        event:send({
+            "eci": subscription{"Tx"},
+            "eid": "send_report",
+            "domain": "car",
+            "type": "receive_report",
+            "attrs" : {
+                "report": trips,
+                "reportId" : reportId
+            }
+        })
+    }
 }

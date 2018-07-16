@@ -7,7 +7,7 @@ ruleset manage_fleet {
         author "Ryan Blaser"
         logging on
         use module io.picolabs.subscription alias Subscriptions
-        share vehicles, entVehicles, generateReports
+        share vehicles, entVehicles, generateReports, getLatestFiveReports
     }
 
     global {
@@ -40,6 +40,9 @@ ruleset manage_fleet {
             url = meta:host + "/sky/cloud/" + eci + "/trip_store/trips";
             response = http:get(url, {});
             response["content"]
+        }
+        getLatestFiveReports = function() {
+            
         }
     }
 
@@ -131,6 +134,70 @@ ruleset manage_fleet {
                     "wellKnown_Tx": ent:vehicles{[key, "eci"]}
                 }
             })
+    }
+    
+    rule generate_report {
+      select when car generate_report
+      pre {
+        num_subs = Subscriptions:established("Tx_role","vehicle").length()
+        reportId = "Report " + random:uuid()
+      }
+      always {
+        ent:reports := ent:reports.defaultsTo({}, "initialized ent:reports");
+        ent:reports := ent:reports.put([reportId], {
+            "vehicles" : num_subs,
+            "responding" : 0,
+            "trips" : [],
+            "timestamp" : time:now()
+        });
+        raise explicit event "generate_report" attributes {
+            "reportId" : reportId
+        }
+      }
+    }
+
+    rule explicit_generate_report {
+        select when explicit generate_report
+        foreach Subscriptions:established("Tx_role","vehicle") setting(subscription)
+            pre {
+                reportId = event:attr("reportId")
+                thing_subs = subscription.klog("vehicle")
+            }
+            event:send({
+                "eci": subscription{"Tx"},
+                "eid": "generate_report",
+                "domain": "car",
+                "type": "generate_report",
+                "attrs": {
+                    "reportId" : reportId
+                }
+            })
+    }
+
+    rule receive_report {
+        select when car receive_report
+        pre {
+            report = event:attr("report")
+            reportId = event:attr("reportId")
+            reports = ent:reports{[reportId]}
+        }
+        always {
+            reports["responding"] = reports["responding"] + 1;
+            reports["trips"].append(report);
+            ent:reports := reports;
+            raise explicit event "return_report" attributes {
+                "reportId" : reportId
+            } if (reports["vehicles"] == reports["responding"]);
+        }
+    }
+
+    rule return_report {
+        select when explicit return_report
+        pre {
+            reportId = event:attr("reportId")
+            report = ent:reports{[reportId]}
+        }
+        send_directive("report", report)
     }
 
     rule clear_vehicles {
