@@ -206,4 +206,11 @@ ruleset manage_fleet {
             ent:vehicles := {}
         }
     }
+
+    rule clear_reports {
+        select when clear reports
+        always {
+            ent:reports := {}
+        }
+    }
 }
