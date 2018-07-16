@@ -42,7 +42,7 @@ ruleset manage_fleet {
             response["content"]
         }
         getLatestFiveReports = function() {
-            
+            ent:reports
         }
     }
 
